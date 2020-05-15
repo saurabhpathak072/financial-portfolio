@@ -16,7 +16,7 @@ class Main extends Component {
             showmodal:false,
             value:null,
             count:10,
-            date:new Date().toLocaleString()-1
+            date:new Date()
         }
     }
 
@@ -69,7 +69,7 @@ class Main extends Component {
 
 addStocks = async (value) =>{
     
-   
+   if(value.shares && value.buyPrice){
     await Axios.put(`https://finanial-portfolio.firebaseio.com/allStocks/0/${this.state.value.symbol}.json`,{
         isMyStocks: true,
         name:this.state.value.name,
@@ -79,7 +79,7 @@ addStocks = async (value) =>{
     .catch((err)=>console.log('isMyStock error',err))
 
     
-let profit=value.buyPrice - this.state.closeprice ;
+let profit=(value.buyPrice - this.state.closeprice )*value.shares;
 console.log("profit",profit);
    await Axios.put(`https://finanial-portfolio.firebaseio.com/myStocks/0/${this.state.value.symbol}.json`,{
 
@@ -96,6 +96,11 @@ console.log("profit",profit);
 
    
     .catch((err)=>console.log(err))
+
+}
+else{
+    alert("Please Fill all the Data");
+}
 
    
 
@@ -139,7 +144,9 @@ console.log("profit",profit);
     
 
     render() {
-        console.log("Main", this.props);
+
+        let days= this.state.date.getDay() == 6 || this.state.date.getDay()==0 ? "Stocks are closed Closing price will show of Friday":"Stocks Are Open for Market";
+        console.log("Main", days);
         
             let stocksName = this.state.mystocks && Object.keys(this.state.mystocks);
         let stocks = stocksName &&  stocksName.map((stocks)=>{
@@ -158,8 +165,9 @@ console.log("profit",profit);
         return (
             
             <div className="container">
-                <div className="header h3">Financial Portfolio Tracker</div>
-                
+                <div className="header h3">Financial Portfolio Tracker </div>
+                <p> {days}</p>
+               
                 <div className="MyStocks container-fluid">
                 <h5 className="text-left font-weight-normal h3 MyStocks">My Stocks</h5>
                 <div class="table-responsive">
@@ -185,10 +193,10 @@ console.log("profit",profit);
                 <div className="AddStocksTitle">
 
                 <h3 className="text-left font-weight-normal col-lg-4  h3 MyStocks">Add Stocks to My Stock</h3>
-            <span className="col-lg-6">
+            <div className="d-flex flex-wrap  row ">
               
                 {allStocks}
-                </span>
+                </div>
                    
                    
 

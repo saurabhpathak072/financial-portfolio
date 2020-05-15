@@ -44,7 +44,7 @@ class Modal extends Component {
             <div className="container">
                 
                 <Backdrop />
-                <div style={{height:'auto', textAlign:'center', position:'fixed', backgroundColor:'#fff', zIndex: 500, left: '15%', top: '10%', boxSizing: 'border-box', width: '70%',padding:'2rem'}}>
+                <div style={{height:'auto', textAlign:'center', position:'fixed', backgroundColor:'#fff', zIndex: 500, left: '15%', top: '10%', boxSizing: 'border-box', width: '70%',padding:'0.5rem'}}>
                     <h5>Add {this.props.title.name} to My Stocks</h5 >
                     <form onSubmit={(e)=>{e.preventDefault();this.props.stocklistHandle(this.state)}}>
                     <div className="content">

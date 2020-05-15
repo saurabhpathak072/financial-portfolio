@@ -55,22 +55,26 @@ render(){
     let allst = this.props.stocks;
 
     let stocklist = (
-        <span className="col-lg-12">
-            <span className="col-lg-4">
-            <button type="button" onClick={(e)=>{e.preventDefault();this.stockhandler(allst)}} className="btn btn-light  stock-button">{allst.symbol}</button>
-    <span className=" h6">{allst.name}</span>
-    </span>
-        </span>
+        <div className="col-lg-12">
+            
+            <button type="button" onClick={(e)=>{e.preventDefault();this.stockhandler(allst)}} className="btn btn-light col-lg-9 stock-button">{allst.symbol}</button>
+           
+            
+    <div className="h6">{allst.name}</div>
+    
+    
+    
+        </div>
     )
 
         return (
             <> 
-            <span className="container">
+            <div className="">
 
                 {
                 
                 stocklist}
-                </span>
+                </div>
                 
             </>
         )
