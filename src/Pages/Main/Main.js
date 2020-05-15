@@ -14,85 +14,102 @@ class Main extends Component {
             mystocks:null,
             allstocks:null,
             showmodal:false,
-            value:null
+            value:null,
+            count:10,
+            date:new Date().toLocaleDateString()
         }
     }
 
    
 
     componentDidMount(){
-        Axios.get(`https://finanial-portfolio.firebaseio.com/myStocks.json`)
-         .then(res => {
-             this.setState({
-                mystocks:res.data
-             },console.log("res",res.data))
-         })
-         .catch(error => console.log("error",error))
-
-        //  Axios.get(`https://finanial-portfolio.firebaseio.com/allStocks.json`)
-        //     .then(res=>{
-        //         this.setState({
-        //             allstocks:res.data
-        //         })
-        //     })
-        //     .catch(error => console.log("All stocks axios error ", error))
+        this.myStocksData();
+        this.stockListData();
+        this.currentData();
     }
+
+    myStocksData = () =>{
+        Axios.get(`https://finanial-portfolio.firebaseio.com/myStocks/0.json`)
+        .then(res => {
+            this.setState({
+               mystocks:res.data
+            },console.log("My Stocks",res.data))
+        })
+        .catch(error => console.log("error",error))
+    }
+
+    stockListData =() =>{
+        Axios.get(`https://finanial-portfolio.firebaseio.com/allStocks/0.json`)
+        .then(res=>{console.log("all",res.data);
+            this.setState({
+                allstocks:res.data
+            },console.log("Stock List",res.data))
+        })
+        .catch(error => console.log("All stocks axios error ", error))
+    }
+
+
+    currentData = () =>{
+        
+        Axios.get(`https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=IBM&datatype=json&apikey=WYK44F4DQD0987XS`)
+        .then(res=>{console.log(res.data["Time Series (Daily)"]);
+       
+            this.setState({
+                data:res.data["Time Series (Daily)"]
+            },console.log("current data",this.state.data))
+        })
+    }
+
+  
 
     
 
     selectedStock =  (value) =>{
-    //     value &&
-    //   this.setState({
-    //       test:value
-    //   },console.log("test",this.state.test))
+   
+      
+    value && this.setState({
+            showmodal:true,
+            value
+        })
 
-        // this.setState({
-        //     value,
-        //     showmodal:true
-        // },console.log("Value",value))
-        debugger;
-    value &&
-        Axios.get(`https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=${value.symbol}&apikey=WYK44F4DQD0987XS`)
-        // .then(res => console.log("res",res.data))
-        .then( res =>
-           this.setState({
-                value,
-                showmodal:true,
-                data:res.data
-            },console.log("value1",this.state.value,"showmodal",this.state.showmodal,"data",this.state.data))
-        )
-
-        .catch(err=>console.log(err))
-    
-
-        
-//     try{
-//     this.setState({
-//         test:value
-//     })
-// }
-// catch(err){
-//     console.log("try err",err)
-// }
 
    }
+
+   addcounter = () =>{
+        this.setState({
+            count:this.state.count+1
+        })
+   }
+   subcounter= ()=>{
+       this.setState({
+        count:this.state.count-1
+       })
+      
+   }
+   toggleModal = () => {
+    this.setState({ showmodal: false , count:this.state.count - 1});
+    this.myStocksData();
+    this.stockListData();
+  };
     
 
     render() {
+        console.log("Main", this.props);
         
-
-        let stocks = this.state.mystocks && this.state.mystocks.map((stocks)=>{
+            let stocksName = this.state.mystocks && Object.keys(this.state.mystocks);
+        let stocks = stocksName &&  stocksName.map((stocks)=>{
             
-            return <Mystocks key={stocks.symbol} stocks={stocks}/>
+            return <Mystocks key={this.state.mystocks[stocks].symbol} stocks={this.state.mystocks[stocks]} myStocks={this.toggleModal} count={this.state.count} />
         })
-
-    //   let allstockstitle = this.state.allstocks && this.state.allstocks.map((stocks)=>{
-    //         return <StockList key={stocks.symbol} stock={stocks}/>
-    //   }) 
-
     
 
-    //  let allstockstitle = this.state.allstocks && <StockList stock={this.state.allstocks} selectedParentData={ (value)=> this.selectedStock(value)}/>
+            let allStocksName = this.state.allstocks && Object.keys(this.state.allstocks);
+            let allStocks = allStocksName && allStocksName.map((allstocks)=>{
+                if(this.state.allstocks[allstocks].isMyStocks)
+                return;
+                else
+                return <StockList key={this.state.allstocks[allstocks].symbol} stocks={this.state.allstocks[allstocks]} selectedParentData={(value)=>this.selectedStock(value)} allStocks={this.stockListData} />
+            })
         return (
             
             <div className="container">
@@ -120,16 +137,18 @@ class Main extends Component {
 
                 <div className="AddStocksTitle">
 
-                <h3 className="text-left font-weight-normal h3 MyStocks">Add Stocks to My Stock</h3>
+                <h3 className="text-left font-weight-normal col-lg-4  h3 MyStocks">Add Stocks to My Stock</h3>
 
-                    {/* {allstockstitle} */}
-                    <StockList selectedParentData={(value)=>this.selectedStock(value)}/>
+              
+                {allStocks}
+                   
+                    {/* <StockList selectedParentData={(value)=>this.selectedStock(value)} count={this.state.count}  addcounter={this.addcounter} subcounter={this.subcounter}/> */}
                    
 
                 </div>
 
                 {
-                    this.state.showmodal && <Modal title={this.state.value} />
+                    this.state.showmodal && <Modal title={this.state.value} modal={this.toggleModal} stocklistHandle={this.props.stocklistHandle} />
                 }
                 
                 

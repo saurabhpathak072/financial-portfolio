@@ -39,51 +39,37 @@ class Modal extends Component {
 
     addStocks = async (event) =>{
         event.preventDefault();
-        alert(
-            `Number of shares ${this.state.shares} price ${this.state.buyPrice} Date ${this.state.buyDate}`
-        );
-
-        // let modal={
-
-        //     symbol:this.props.title.symbol,
-        //     name:this.props.title.name,
-        //     shares : this.state.shares,
-        //     buyPrice: this.state.buyPrice,
-            
-
-        // }
+       let value=this.props.title;
        
-        while(this.state.id < 5){
-       await Axios.put(`https://finanial-portfolio.firebaseio.com/myStocks/${this.state.id}.json`,{
+        await Axios.put(`https://finanial-portfolio.firebaseio.com/allStocks/0/${value.symbol}.json`,{
+            isMyStocks: true,
+            name:this.props.title.name,
+            symbol:this.props.title.symbol
+        })
+        .then((resp=>console.log(resp)))
+        .catch((err)=>console.log('isMyStock error',err))
+//---------------------------------------------------------------------------------------------
 
-            symbol:this.props.title.name
+       await Axios.put(`https://finanial-portfolio.firebaseio.com/myStocks/0/${value.symbol}.json`,{
+
+        symbol:this.props.title.symbol,
+        name:this.props.title.name,
+        numberOfShares : this.state.shares,
+        closingPrice: this.state.buyPrice,
             
         })
         .then((resp=>console.log(resp)))
+        .then(()=>this.props.modal())
+//-------------------------------------------------------------------------------
+       
         .catch((err)=>console.log(err))
 
-        if(this.state.id==5){
-            this.setState({
-                id:0
-            });
-        }
-        else{
-            this.setState({
-                id:this.setState.id+1
-            })
-        }
-        
-    }
-
-     
+       
 
     }
 
     render() {
-
-        // console.log("render",this.props.content);
-        // let datakey =  Object.keys(this.props.content);
-        // console.log(datakey);
+        console.log("Modal props",this.props);
         return (
             <div className="container">
                 
