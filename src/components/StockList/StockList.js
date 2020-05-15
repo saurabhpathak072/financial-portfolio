@@ -50,45 +50,29 @@ class StockList extends React.Component {
 
 render(){
 
-    console.log("StockList props", this.props);
+
 
     let allst = this.props.stocks;
 
     let stocklist = (
-        <div >
-            <button type="button" onClick={(e)=>{e.preventDefault();this.stockhandler(allst)}} className="btn btn-light float-left stock-button">{allst.symbol}</button>
-    <h6 className="align-middle">{allst.name}</h6>
-        </div>
+        <span className="col-lg-12">
+            <span className="col-lg-4">
+            <button type="button" onClick={(e)=>{e.preventDefault();this.stockhandler(allst)}} className="btn btn-light  stock-button">{allst.symbol}</button>
+    <span className=" h6">{allst.name}</span>
+    </span>
+        </span>
     )
 
-
-
-    // let stocklistName = this.state.allstocks && Object.keys(this.state.allstocks);
-    // let stocklist = stocklistName && stocklistName.map((stock)=>{
-    //   if(this.state.allstocks[stock].isMyStocks)
-    //   {return}
-    //   else
-    // return (<div 
-    //     className="col-lg-4 stock-tag" key={stock}
-       
-    //     ><button type="button" onClick={(e) =>{e.preventDefault();this.stockhandler(this.state.allstocks[stock])}}
-    //      className="btn btn-light float-left stock-button"
-    //      >{stock}
-    //      </button>
-    //      <h6 className="align-middle"
-    //      >{this.state.allstocks[stock].name}
-    //      </h6>
-    //      </div>)
-    // })
         return (
-            <div className="row container"> 
+            <> 
+            <span className="container">
 
                 {
                 
                 stocklist}
+                </span>
                 
-                {/* {this.props.selectedData(this.state.selection && this.state.selection)} */}
-            </div>
+            </>
         )
         }
 }

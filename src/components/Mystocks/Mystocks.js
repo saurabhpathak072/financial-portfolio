@@ -10,15 +10,6 @@ class Mystocks extends React.Component {
 
    removeStocks = async (value) =>{
      
-       console.log("e",value);
-        // Axios.delete(`https://finanial-portfolio.firebaseio.com/myStocks/0/${e.target.value}.json`)
-        // .then(()=>this.props.myStocks())
-        // .catch((err)=>console.log(err))
-
-
-
-
-
        await Axios.put(`https://finanial-portfolio.firebaseio.com/allStocks/0/${value.symbol}.json`,{
             isMyStocks: false,
             name:value.name,
@@ -38,18 +29,20 @@ class Mystocks extends React.Component {
  
  
     render(){
-        console.log(this.props.count);
+
         let symbol =this.props.stocks.symbol;
    let st = this.props.stocks;
    let stocks = (
     <>
     
-    <td>{st.symbol}</td>
+    <td scope="row">{st.symbol}</td>
     <td>{st.name}</td>
     <td>{st.numberOfShares}</td>
-    <td>{st.closingPrice}</td>
     <td>{st.currentPrice}</td>
-    <td></td>
+    <td>{st.closingPrice}</td>
+    
+    
+   <td>{st.profit}</td>
     <td><button type="button" className="btn btn-danger" onClick={(e)=>{e.preventDefault();this.removeStocks(st)}}>Stop Tracking</button></td>
     <th></th>
         </>
@@ -58,7 +51,6 @@ class Mystocks extends React.Component {
      
                 <tbody>
                     <tr scope="row">
-                        {/* {mystocks} */}
 
                         
                         {

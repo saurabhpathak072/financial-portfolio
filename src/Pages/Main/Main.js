@@ -16,7 +16,7 @@ class Main extends Component {
             showmodal:false,
             value:null,
             count:10,
-            date:new Date().toLocaleDateString()
+            date:new Date().toLocaleString()-1
         }
     }
 
@@ -25,7 +25,7 @@ class Main extends Component {
     componentDidMount(){
         this.myStocksData();
         this.stockListData();
-        this.currentData();
+        
     }
 
     myStocksData = () =>{
@@ -49,16 +49,61 @@ class Main extends Component {
     }
 
 
-    currentData = () =>{
-        
-        Axios.get(`https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=IBM&datatype=json&apikey=WYK44F4DQD0987XS`)
-        .then(res=>{console.log(res.data["Time Series (Daily)"]);
-       
+    currentData = (value) =>{
+        console.log("curent Data value",value)
+        Axios.get(`https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=${value.symbol}&datatype=json&apikey=WYK44F4DQD0987XS`)
+        .then(res=>{res=res.data["Time Series (Daily)"];
+         let dates = Object.keys(res);
+
+         let close=   dates[0];
+         let close1 = res[close]
+         let closeprice= close1["4. close"]
+        console.log("Date", closeprice);
             this.setState({
-                data:res.data["Time Series (Daily)"]
-            },console.log("current data",this.state.data))
+                closeprice
+            },console.log("current data",this.state.closeprice))
         })
     }
+
+//--------------------------------------------------------------------------------
+
+addStocks = async (value) =>{
+    
+   
+    await Axios.put(`https://finanial-portfolio.firebaseio.com/allStocks/0/${this.state.value.symbol}.json`,{
+        isMyStocks: true,
+        name:this.state.value.name,
+        symbol:this.state.value.symbol
+    })
+    .then((resp=>console.log(resp)))
+    .catch((err)=>console.log('isMyStock error',err))
+
+    
+let profit=value.buyPrice - this.state.closeprice ;
+console.log("profit",profit);
+   await Axios.put(`https://finanial-portfolio.firebaseio.com/myStocks/0/${this.state.value.symbol}.json`,{
+
+    symbol:this.state.value.symbol,
+    name:this.state.value.name,
+    numberOfShares : value.shares,
+    currentPrice: value.buyPrice,
+     closingPrice:this.state.closeprice,
+     profit:profit
+        
+    })
+    .then((resp=>console.log(resp)))
+    .then(()=>this.toggleModal())
+
+   
+    .catch((err)=>console.log(err))
+
+   
+
+}
+//--------------------------------------------------------------------------------
+
+
+
 
   
 
@@ -72,7 +117,7 @@ class Main extends Component {
             value
         })
 
-
+        this.currentData(value);
    }
 
    addcounter = () =>{
@@ -117,7 +162,8 @@ class Main extends Component {
                 
                 <div className="MyStocks container-fluid">
                 <h5 className="text-left font-weight-normal h3 MyStocks">My Stocks</h5>
-                <table className="MyStocksTable table container-fluid">
+                <div class="table-responsive">
+                <table className="MyStocksTable table container-fluid ">
                     <thead>
                     <tr>
                         <th scope="col">Stock Symbol</th>
@@ -132,23 +178,24 @@ class Main extends Component {
                 {stocks}
                 </table>
                 </div>
+                </div>
 
                 <hr/>
 
                 <div className="AddStocksTitle">
 
                 <h3 className="text-left font-weight-normal col-lg-4  h3 MyStocks">Add Stocks to My Stock</h3>
-
+            <span className="col-lg-6">
               
                 {allStocks}
+                </span>
                    
-                    {/* <StockList selectedParentData={(value)=>this.selectedStock(value)} count={this.state.count}  addcounter={this.addcounter} subcounter={this.subcounter}/> */}
                    
 
                 </div>
 
                 {
-                    this.state.showmodal && <Modal title={this.state.value} modal={this.toggleModal} stocklistHandle={this.props.stocklistHandle} />
+                    this.state.showmodal && <Modal title={this.state.value} modal={this.toggleModal} stocklistHandle={this.addStocks} />
                 }
                 
                 

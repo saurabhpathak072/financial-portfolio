@@ -37,36 +37,6 @@ class Modal extends Component {
         })
     }
 
-    addStocks = async (event) =>{
-        event.preventDefault();
-       let value=this.props.title;
-       
-        await Axios.put(`https://finanial-portfolio.firebaseio.com/allStocks/0/${value.symbol}.json`,{
-            isMyStocks: true,
-            name:this.props.title.name,
-            symbol:this.props.title.symbol
-        })
-        .then((resp=>console.log(resp)))
-        .catch((err)=>console.log('isMyStock error',err))
-//---------------------------------------------------------------------------------------------
-
-       await Axios.put(`https://finanial-portfolio.firebaseio.com/myStocks/0/${value.symbol}.json`,{
-
-        symbol:this.props.title.symbol,
-        name:this.props.title.name,
-        numberOfShares : this.state.shares,
-        closingPrice: this.state.buyPrice,
-            
-        })
-        .then((resp=>console.log(resp)))
-        .then(()=>this.props.modal())
-//-------------------------------------------------------------------------------
-       
-        .catch((err)=>console.log(err))
-
-       
-
-    }
 
     render() {
         console.log("Modal props",this.props);
@@ -76,7 +46,7 @@ class Modal extends Component {
                 <Backdrop />
                 <div style={{height:'auto', textAlign:'center', position:'fixed', backgroundColor:'#fff', zIndex: 500, left: '15%', top: '10%', boxSizing: 'border-box', width: '70%',padding:'2rem'}}>
                     <h5>Add {this.props.title.name} to My Stocks</h5 >
-                    <form onSubmit={this.addStocks}>
+                    <form onSubmit={(e)=>{e.preventDefault();this.props.stocklistHandle(this.state)}}>
                     <div className="content">
 
                         <div className="form-group col-lg-12">
